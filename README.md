@@ -117,7 +117,7 @@ EOF
 ssh mysql-server
 cd fbctf/
 source ./extra/lib.sh
-set_password new_password ctf ctf fbctf $PWD
+set_password <new_password> ctf ctf fbctf $PWD
 ```
  
 
