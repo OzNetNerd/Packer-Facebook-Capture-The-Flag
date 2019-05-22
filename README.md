@@ -10,6 +10,7 @@ Each directory (`single-node` and `multi-node`) contain `build` and `deploy` sub
 
 To get started, you must [Build](#Build) your image(s) and then [Deploy](#Deploy) them.  
 
+
 # Build
 
 1. Set up your AWS credentials in one of the following ways:
@@ -93,6 +94,16 @@ To get started, you must [Build](#Build) your image(s) and then [Deploy](#Deploy
 ## Multiple Deployments
 
 To run multiple deployments simultaneously, simply run the deployment command multiple times using unique `CFN_STACK_NAME` variables. Using an existing stack name will result in a CloudFormation execution error.
+
+## Resources
+
+Each deployment creates:
+* 1 x VPC
+* 2 x Subnets
+* 1 x Internet Gateway
+* 2 x Security Groups
+* 1 x EIP
+* 1 to 4 Instances (default: t2.large)
 
 # Multi-Node Additional Notes
 ## SSH Tunnel
