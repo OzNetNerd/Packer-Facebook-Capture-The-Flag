@@ -90,6 +90,10 @@ To get started, you must [Build](#Build) your image(s) and then [Deploy](#Deploy
 	make CFN_STACK_NAME="MultiCTFNodes" stop-ctf
 	```
 
+## Multiple Deployments
+
+To run multiple deployments simultaneously, simply run the deployment command multiple times using unique `CFN_STACK_NAME` variables. Using an existing stack name will result in a CloudFormation execution error.
+
 # Multi-Node Additional Notes
 ## SSH Tunnel
 
