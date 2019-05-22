@@ -13,10 +13,10 @@ To get started, you must [Build](#Build) your image(s) and then [Deploy](#Deploy
 # Build
 
 1. Set up your AWS credentials in one of the following ways:
-	1. Set the `AWS_ACCESS_KEY_ID `, `AWS_SECRET_ACCESS_KEY ` and `AWS_DEFAULT_REGION` environment variables.
+	1. Set the `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` and `AWS_DEFAULT_REGION` environment variables.
 	2. Create an [AWS Named Profile](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html). You will need to configure a default profile or set the `AWS_DEFAULT_PROFILE` environment variable.
 
-2. Download Packer
+2. Download Packer:
 
     ```
     cd /tmp
@@ -69,7 +69,7 @@ To get started, you must [Build](#Build) your image(s) and then [Deploy](#Deploy
 
 3. (Optional) [Reset password.](https://github.com/facebook/fbctf/wiki/FAQ#how-do-i-reset-the-admin-password-for-the-platform)
 	
-	**Note:** The below command is for Single Node deployments only. See the [SSH Tunnel](#SSH Tunnel) section for Multi Node deployment instructions.
+	**Note:** The below command is for Single Node deployments only. See the [SSH Tunnel](#SSH-Tunnel) section for Multi Node deployment instructions.
 	
 	```
 	ssh ubuntu@<public_ip> -i ~/.ssh/<key_path>
