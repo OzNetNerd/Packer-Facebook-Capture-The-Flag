@@ -73,7 +73,7 @@ To get started, you must [Build](#Build) your image(s) and then [Deploy](#Deploy
 	**Note:** The below command is for Single Node deployments only. See the [SSH Tunnel](#SSH-Tunnel) section for Multi Node deployment instructions.
 	
 	```
-	ssh ubuntu@<public_ip> -i ~/.ssh/<key_path>
+	ssh ubuntu@<public_ip> -i <key_path>
 	cd fbctf/
 	source ./extra/lib.sh
 	set_password <new_password> ctf ctf fbctf $PWD
