@@ -1,0 +1,150 @@
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  TagKey:
+    Type: String
+    Default: Name
+  TagValue:
+    Type: String
+    Default: FBCTF Game
+  VpcCidr:
+    Type: String
+    Description: CIDR block for FBCTF Game VPC
+    Default: 10.0.0.0/16
+  PrivateSubnetCidr:
+    Type: String
+    Description: Private subnet
+    Default: 10.0.0.0/24
+  PublicSubnetCidr:
+    Type: String
+    Description: Public subnet
+    Default: 10.0.1.0/24
+  AdminCidr:
+    Description: >-
+      IP address(es) which are allowed to SSH in
+    Type: String
+    Default: 0.0.0.0/0
+  Ec2KeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: >-
+      Name of an existing EC2 KeyPair to enable SSH access to the instances
+  InstanceType:
+    Description: EC2 instance type
+    Type: String
+    Default: t2.large
+  SingleNodeAmi:
+    Type: AWS::EC2::Image::Id
+    Description: Single node AMI
+
+Resources:
+  Vpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCidr
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      Tags:
+        - Key: !Ref TagKey
+          Value: !Ref TagValue
+
+  PrivateSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: !Ref PrivateSubnetCidr
+      VpcId: !Ref Vpc
+      Tags:
+        - Key: !Ref TagKey
+          Value: !Ref TagValue
+
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: !Ref PublicSubnetCidr
+      MapPublicIpOnLaunch: true
+      VpcId: !Ref Vpc
+      Tags:
+        - Key: !Ref TagKey
+          Value: !Ref TagValue
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: !Ref TagKey
+          Value: !Ref TagValue
+
+  VpcGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref Vpc
+      InternetGatewayId: !Ref InternetGateway
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref Vpc
+
+  InternetRoute:
+    Type: AWS::EC2::Route
+    DependsOn: VpcGatewayAttachment
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+      RouteTableId: !Ref PublicRouteTable
+
+  PublicSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref PublicSubnet
+
+  PublicSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: "SingleNodeFBCTFGame"
+      GroupDescription: "SSH, HTTP and HTTPS in, everything out."
+      VpcId: !Ref Vpc
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: !Ref AdminCidr
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: icmp
+          FromPort: -1
+          ToPort: -1
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+
+  SingleNodeInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref SingleNodeAmi
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref Ec2KeyName
+      SubnetId: !Ref PublicSubnet
+      SecurityGroupIds:
+        - !Ref PublicSecurityGroup
+      Tags:
+        - Key: Name
+          Value: FBCTFSingleNode
+
+  WebIp:
+    Type: AWS::EC2::EIP
+    Properties:
+      InstanceId: !Ref SingleNodeInstance
+
+Outputs:
+  GameAddress:
+    Description: IP address to access the game
+    Value: !Sub "https://${WebIp}"
+    Export:
+      Name: !Sub "${AWS::StackName}-GameAddress"
